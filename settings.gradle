@@ -1,0 +1,3 @@
+include ':AwesomeDownloader'
+include ':app'
+rootProject.name = "AwesomeDownloaderDemo"
