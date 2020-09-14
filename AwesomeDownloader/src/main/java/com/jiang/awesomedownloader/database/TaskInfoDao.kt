@@ -1,8 +1,10 @@
 package com.jiang.awesomedownloader.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.jiang.awesomedownloader.database.TASK_STATUS_FINISH
 import com.jiang.awesomedownloader.database.TaskInfo
+import kotlinx.coroutines.flow.Flow
 
 /**
  *
@@ -29,6 +31,12 @@ interface TaskInfoDao {
     @Query("select * from TaskInfo")
     suspend fun queryAll(): MutableList<TaskInfo>
 
+    @Query("select * from TaskInfo")
+    fun queryAllAndReturnLiveData(): LiveData<List<TaskInfo>>
+
     @Query("select * from TaskInfo where status < $TASK_STATUS_FINISH")
-    suspend fun queryUnfinish(): MutableList<TaskInfo>
+    suspend fun queryUnfinished(): MutableList<TaskInfo>
+
+    @Query("select * from TaskInfo where status < $TASK_STATUS_FINISH")
+    fun queryUnfinishedLiveData(): LiveData<MutableList<TaskInfo>>
 }

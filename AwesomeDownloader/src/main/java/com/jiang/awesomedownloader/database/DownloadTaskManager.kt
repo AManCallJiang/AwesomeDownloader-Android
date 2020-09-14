@@ -1,6 +1,7 @@
 package com.jiang.awesomedownloader.database
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import androidx.room.Room
 
 /**
@@ -19,17 +20,9 @@ class DownloadTaskManager(private val appContext: Context) {
         Room.databaseBuilder(appContext, DownloaderRoomDatabase::class.java, DATABASE_NAME).build()
     }
 
-     val dao by lazy { database.getTaskInfoDao() }
+    val dao by lazy { database.getTaskInfoDao() }
 
-    suspend fun add(
-        fileName: String,
-        filePath: String,
-        url: String,
-        downloadedBytes: Long,
-        totalBytes: Long,
-        statusCode: Int
-    ) {
+    fun getAllTaskInfoLiveData(): LiveData<List<TaskInfo>> = dao.queryAllAndReturnLiveData()
 
-    }
-
+    fun getUnfinishedTaskInfoLiveData(): LiveData<MutableList<TaskInfo>> = dao.queryUnfinishedLiveData()
 }

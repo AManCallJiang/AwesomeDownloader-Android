@@ -14,7 +14,7 @@ import kotlin.Exception
  *
  * @ProjectName:    AwesomeDownloader
  * @ClassName:      AwesomeDownloader
- * @Description:     java类作用描述
+ * @Description:    核心类（单例）
  * @Author:         江
  * @CreateDate:     2020/8/18 20:04
  */
@@ -23,6 +23,7 @@ const val TAG = "AwesomeDownloader"
 
 object AwesomeDownloader {
     val option by lazy { AwesomeDownloaderOption() }
+    private var isInitialized = false
     private val downloadListener by lazy { DownloadListener() }
     private val downloadController by lazy { DownloadController() }
     private val api by lazy {
@@ -54,11 +55,20 @@ object AwesomeDownloader {
         }
     }
 
+    /**
+     *
+     * @param appContext Context ：Application 的 Context
+     * @return AwesomeDownloader
+     */
     fun init(appContext: Context): AwesomeDownloader {
+        if (isInitialized) return this
+
         this.appContext = appContext
         taskManager = DownloadTaskManager(appContext)
         notificationUtil = NotificationUtil(appContext)
         notificationUtil.createNotificationChannel()
+        isInitialized = true
+
         return this
     }
 
@@ -95,16 +105,16 @@ object AwesomeDownloader {
 
     fun getDownloadQueueArray() = downloadQueue.toTypedArray()
 
-     suspend fun queryAllTaskInfo(): MutableList<TaskInfo> {
+    suspend fun queryAllTaskInfo(): MutableList<TaskInfo> {
         return withContext(Dispatchers.IO) {
             return@withContext taskManager.dao.queryAll()
         }
     }
 
 
-     suspend fun queryUnfinished(): MutableList<TaskInfo> {
+    suspend fun queryUnfinished(): MutableList<TaskInfo> {
         return withContext(Dispatchers.IO) {
-            return@withContext taskManager.dao.queryUnfinish()
+            return@withContext taskManager.dao.queryUnfinished()
         }
     }
 
@@ -183,6 +193,11 @@ object AwesomeDownloader {
         return this
     }
 
+    /**
+     *
+     * @param onFinished Function2<String, String, Unit>: param1-> filePath, param2-> fileName
+     * @return AwesomeDownloader
+     */
     fun setOnFinished(onFinished: (String, String) -> Unit): AwesomeDownloader {
         onDownloadFinished = onFinished
         return this
