@@ -62,37 +62,3 @@ class OpenFileReceiver : BroadcastReceiver() {
         }
     }
 }
-
-fun isVideoFile(fileName: String): Boolean {
-    val split = fileName.split(".")
-    val s = split[split.size - 1]
-    return s.equals("mp4", ignoreCase = true) ||
-            s.equals("mpg", ignoreCase = true) ||
-            s.equals("mpeg", ignoreCase = true) ||
-            s.equals("avi", ignoreCase = true) ||
-            s.equals("rm", ignoreCase = true) ||
-            s.equals("rmvb", ignoreCase = true) ||
-            s.equals("mov", ignoreCase = true) ||
-            s.equals("wmv", ignoreCase = true) ||
-            s.equals("asf", ignoreCase = true) ||
-            s.equals("dat", ignoreCase = true)
-}
-
-fun isAudioFile(fileName: String): Boolean {
-    val split = fileName.split(".")
-    val s = split[split.size - 1]
-    return s.equals("mp3", ignoreCase = true) ||
-            s.equals("wma", ignoreCase = true) ||
-            s.equals("wav", ignoreCase = true) ||
-            s.equals("mid", ignoreCase = true)
-}
-
-fun isImageFile(fileName: String): Boolean {
-    val split = fileName.split(".")
-    val s = split[split.size - 1]
-    return s.contains("bmp", ignoreCase = true) ||
-            s.contains("jpg", ignoreCase = true) ||
-            s.contains("jpeg", ignoreCase = true) ||
-            s.contains("png", ignoreCase = true) ||
-            s.contains("gif", ignoreCase = true)
-}

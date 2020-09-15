@@ -1,7 +1,7 @@
 package com.jiang.awesomedownloader.http
 
-import com.jiang.awesomedownloader.DownloadController
-import com.jiang.awesomedownloader.BaseDownloadListener
+import com.jiang.awesomedownloader.downloader.DownloadController
+import com.jiang.awesomedownloader.downloader.BaseDownloadListener
 import okhttp3.MediaType
 import okhttp3.ResponseBody
 import okio.*

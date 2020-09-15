@@ -1,8 +1,8 @@
 package com.jiang.awesomedownloader.http
 
 
-import com.jiang.awesomedownloader.DownloadController
-import com.jiang.awesomedownloader.BaseDownloadListener
+import com.jiang.awesomedownloader.downloader.DownloadController
+import com.jiang.awesomedownloader.downloader.BaseDownloadListener
 import okhttp3.Interceptor
 import okhttp3.Response
 

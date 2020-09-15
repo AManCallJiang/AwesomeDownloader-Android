@@ -1,4 +1,4 @@
-package com.jiang.awesomedownloader
+package com.jiang.awesomedownloader.downloader
 
 /**
  *
@@ -9,7 +9,8 @@ package com.jiang.awesomedownloader
  * @CreateDate:     2020/8/21 16:11
  */
 class DownloadController {
-    private var workState = WorkState.RUNNING
+    private var workState =
+        WorkState.RUNNING
     fun pause() {
         workState = WorkState.STOP
     }

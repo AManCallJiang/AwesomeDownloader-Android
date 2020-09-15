@@ -1,4 +1,4 @@
-package com.jiang.awesomedownloader
+package com.jiang.awesomedownloader.downloader
 
 /**
  *

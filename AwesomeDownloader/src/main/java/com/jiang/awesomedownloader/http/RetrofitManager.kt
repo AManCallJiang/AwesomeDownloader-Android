@@ -1,8 +1,8 @@
 package com.jiang.awesomedownloader.http
 
-import com.jiang.awesomedownloader.AwesomeDownloader
-import com.jiang.awesomedownloader.AwesomeDownloaderOption
-import com.jiang.awesomedownloader.DownloadController
+import com.jiang.awesomedownloader.downloader.AwesomeDownloader
+import com.jiang.awesomedownloader.downloader.AwesomeDownloaderOption
+import com.jiang.awesomedownloader.downloader.DownloadController
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit
  */
 object RetrofitManager {
     private const val READ_TIME_OUT: Long = 5
+
     fun createRetrofit(
         downloadListener: AwesomeDownloader.DownloadListener,
         downloadController: DownloadController,

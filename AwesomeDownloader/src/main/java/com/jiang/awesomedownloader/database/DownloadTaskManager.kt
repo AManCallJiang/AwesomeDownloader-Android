@@ -22,7 +22,10 @@ class DownloadTaskManager(private val appContext: Context) {
 
     val dao by lazy { database.getTaskInfoDao() }
 
-    fun getAllTaskInfoLiveData(): LiveData<List<TaskInfo>> = dao.queryAllAndReturnLiveData()
+    suspend fun getAllTaskInfo(): MutableList<TaskInfo> = dao.queryAll()
+    suspend fun getUnfinishedTaskInfo(): MutableList<TaskInfo> = dao.queryUnfinished()
 
-    fun getUnfinishedTaskInfoLiveData(): LiveData<MutableList<TaskInfo>> = dao.queryUnfinishedLiveData()
+    fun getAllTaskInfoLiveData(): LiveData<List<TaskInfo>> = dao.queryAllAndReturnLiveData()
+    fun getUnfinishedTaskInfoLiveData(): LiveData<MutableList<TaskInfo>> =
+        dao.queryUnfinishedLiveData()
 }
