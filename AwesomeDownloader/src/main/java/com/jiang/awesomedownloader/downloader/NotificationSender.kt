@@ -1,4 +1,4 @@
-package com.jiang.awesomedownloader
+package com.jiang.awesomedownloader.downloader
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -10,6 +10,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.jiang.awesomedownloader.R
 import com.jiang.awesomedownloader.receiver.*
 
 
@@ -22,19 +23,22 @@ import com.jiang.awesomedownloader.receiver.*
  * @CreateDate:     2020/8/24 22:07
  */
 
-private const val name = "AwesomeDownloaderNotification"
+private const val CHANNEL_NAME = "AwesomeDownloaderNotification"
 private const val descriptionText = "Downloader channel to show progress"
 private const val PROGRESS_MAX = 100
 private const val DOWNLOAD_ID = 1001
 private const val DONE_ID = 2001
 
-class NotificationUtil(private val context: Context) {
+class NotificationSender(private val context: Context) :
+    INotificationSender {
     private val CHANNEL_ID: String = this.javaClass.name
-    fun createNotificationChannel() {
+    override fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManager.IMPORTANCE_LOW
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                description = descriptionText
+            val channel = NotificationChannel(CHANNEL_ID,
+                CHANNEL_NAME, importance).apply {
+                description =
+                    descriptionText
             }
             val notificationManager: NotificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -67,7 +71,7 @@ class NotificationUtil(private val context: Context) {
         }
     }
 
-    fun showDownloadProgressNotification(
+   override fun showDownloadProgressNotification(
         progress: Int,
         fileName: String,
         isDownloading: Boolean
@@ -90,11 +94,11 @@ class NotificationUtil(private val context: Context) {
         NotificationManagerCompat.from(context).notify(DOWNLOAD_ID, builder.build())
     }
 
-    fun cancelDownloadProgressNotification() {
+    override fun cancelDownloadProgressNotification() {
         NotificationManagerCompat.from(context).cancel(DOWNLOAD_ID)
     }
 
-    fun showDownloadStopNotification(fileName: String) {
+    override fun showDownloadStopNotification(fileName: String) {
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_download)
             .addAction(
@@ -113,7 +117,7 @@ class NotificationUtil(private val context: Context) {
         NotificationManagerCompat.from(context).notify(DOWNLOAD_ID, builder.build())
     }
 
-    fun showDownloadDoneNotification(fileName: String, filePath: String) {
+    override fun showDownloadDoneNotification(fileName: String, filePath: String) {
         val openFileIntent = Intent(context, OpenFileReceiver::class.java).apply {
             action = "ACTION_OPEN"
             putExtra("ACTION_OPEN", 0)
