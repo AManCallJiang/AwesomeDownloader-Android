@@ -1,16 +1,16 @@
-package com.jiang.awesomedownloader
+package com.jiang.awesomedownloader.tool
 
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import com.jiang.awesomedownloader.database.TaskInfo
-import com.jiang.awesomedownloader.receiver.isAudioFile
-import com.jiang.awesomedownloader.receiver.isImageFile
-import com.jiang.awesomedownloader.receiver.isVideoFile
+import com.jiang.awesomedownloader.downloader.AwesomeDownloader
+import com.jiang.awesomedownloader.downloader.TAG
 
 
 /**
@@ -75,5 +75,36 @@ object MediaStoreHelper {
             )
             Log.d(TAG, "notifyMediaStore: done")
         }
+    }
+
+
+
+    fun notifyMediaScanner(taskInfo: TaskInfo, appContext: Context) {
+        val fileName = taskInfo.fileName
+        val mimeType = if (isImageFile(fileName)) {
+//            "image/jpeg"
+            "image/*"
+        } else if (isAudioFile(fileName)) {
+//            "audio/x-mpeg"
+            "audio/*"
+        } else if (isVideoFile(fileName)) {
+//            "video/mp4"
+            "video/*"
+        } else {
+            ""
+        }
+
+        if (mimeType.isNotEmpty()) {
+            MediaScannerConnection.scanFile(
+                appContext,
+                arrayOf(taskInfo.filePath),
+                arrayOf(mimeType)
+            ) { path, uri ->
+                Log.d(TAG, "notifyIt: $fileName $path $uri")
+            }
+        } else {
+            Log.d(TAG, "notifyIt: 类型不匹配 $fileName")
+        }
+
     }
 }
