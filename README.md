@@ -18,9 +18,10 @@
 ```
 
 2. 添加依赖：
+[![](https://jitpack.io/v/com.gitee.jiang_li_jie_j/awesome-downloader.svg)](https://jitpack.io/#com.gitee.jiang_li_jie_j/awesome-downloader)
 ```groovy
 	dependencies {
-	        implementation 'com.gitee.jiang_li_jie_j:awesome-downloader:Tag'
+	        implementation 'com.gitee.jiang_li_jie_j:awesome-downloader:v1.0.1'
 	}
 
 ```
