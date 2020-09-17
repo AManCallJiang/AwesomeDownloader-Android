@@ -41,7 +41,7 @@ object AwesomeDownloader {
     private lateinit var taskManager: DownloadTaskManager
     private var downloadingTask: TaskInfo? = null
     private var appContext: Context? = null
-    private lateinit var notificationUtil: NotificationSender
+    private lateinit var notificationSender: NotificationSender
 
     private var onDownloadError: (Exception) -> Unit = {}
     private var onDownloadProgressChange: (Long) -> Unit = {}
@@ -78,9 +78,9 @@ object AwesomeDownloader {
 
         AwesomeDownloader.appContext = appContext
         taskManager = DownloadTaskManager(appContext)
-        notificationUtil =
-            NotificationSender(appContext)
-        notificationUtil.createNotificationChannel()
+        notificationSender =
+            DefaultNotificationSender(appContext)
+        notificationSender.createNotificationChannel()
         isInitialized = true
 
         return this
@@ -196,7 +196,7 @@ object AwesomeDownloader {
             downloadQueue.clear()
             downloadingTask = null
         }
-        notificationUtil.cancelDownloadProgressNotification()
+        notificationSender.cancelDownloadProgressNotification()
     }
 
     /**
@@ -211,7 +211,7 @@ object AwesomeDownloader {
                     downloadingTask!!
                 )
                 downloadingTask = null
-                notificationUtil.cancelDownloadProgressNotification()
+                notificationSender.cancelDownloadProgressNotification()
                 delay(2000)
                 resumeAndStart()
             }
@@ -284,15 +284,18 @@ object AwesomeDownloader {
         return this
     }
 
+    fun setNotificationSender(sender: NotificationSender): AwesomeDownloader {
+        notificationSender = sender
+        return this
+    }
+
     class DownloadListener :
         BaseDownloadListener {
         override fun onProgressChange(progress: Long) {
             Log.d(TAG, "$progress %")
             if (option.showNotification) {
-                notificationUtil.showDownloadProgressNotification(
-                    progress.toInt(),
-                    downloadingTask?.fileName ?: "null",
-                    true
+                notificationSender.showDownloadProgressNotification(
+                    progress.toInt(), downloadingTask?.fileName ?: "null"
                 )
             }
             GlobalScope.launch(Dispatchers.Main) {
@@ -311,7 +314,7 @@ object AwesomeDownloader {
                     it.status = TASK_STATUS_UNFINISHED
                 }
                 GlobalScope.launch(Dispatchers.IO) { taskManager.dao.update(it) }
-                notificationUtil.showDownloadStopNotification(task.fileName)
+                notificationSender.showDownloadStopNotification(task.fileName)
             }
             GlobalScope.launch(Dispatchers.Main) {
                 onDownloadStop(downloadBytes, totalBytes)
@@ -319,29 +322,24 @@ object AwesomeDownloader {
         }
 
         override fun onFinish(downloadBytes: Long, totalBytes: Long) {
-            val task =
-                downloadingTask
+            val task = downloadingTask
             task?.let {
                 if (it.status == TASK_STATUS_UNINITIALIZED) it.totalBytes = totalBytes
                 it.downloadedBytes += downloadBytes
                 it.status = TASK_STATUS_FINISH
                 GlobalScope.launch(Dispatchers.IO) { taskManager.dao.insert(it) }
-                notifyMediaStore(
-                    it
-                )
+                notifyMediaStore(it)
             }
             if (option.showNotification) {
-                notificationUtil.cancelDownloadProgressNotification()
-                notificationUtil.showDownloadDoneNotification(
+
+                notificationSender.showDownloadDoneNotification(
                     downloadingTask?.fileName ?: "null",
                     downloadingTask?.filePath ?: "null"
                 )
+                notificationSender.cancelDownloadProgressNotification()
             }
             GlobalScope.launch(Dispatchers.Main) {
-                onDownloadFinished(
-                    task?.filePath ?: "null",
-                    task?.fileName ?: "null"
-                )
+                onDownloadFinished(task?.filePath ?: "null", task?.fileName ?: "null")
             }
         }
     }

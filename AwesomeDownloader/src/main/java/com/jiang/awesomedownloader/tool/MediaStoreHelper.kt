@@ -53,6 +53,7 @@ object MediaStoreHelper {
                         resolver?.insert(contentUri, values)
                     }
                     else -> {
+                        Log.d(TAG, "notifyIt: 类型不匹配 $fileName")
                         return
                     }
                 }
@@ -66,14 +67,14 @@ object MediaStoreHelper {
                     )
                 }
             }
-
+            Log.d(TAG, "notifyMediaStore: done")
             appContext?.sendBroadcast(
                 Intent(
                     Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                     Uri.parse("file://${taskInfo.filePath}/${taskInfo.fileName}")
                 )
             )
-            Log.d(TAG, "notifyMediaStore: done")
+            Log.d(TAG, "notifyMediaStore: sendBroadcast")
         }
     }
 
@@ -81,17 +82,22 @@ object MediaStoreHelper {
 
     fun notifyMediaScanner(taskInfo: TaskInfo, appContext: Context) {
         val fileName = taskInfo.fileName
-        val mimeType = if (isImageFile(fileName)) {
-//            "image/jpeg"
-            "image/*"
-        } else if (isAudioFile(fileName)) {
-//            "audio/x-mpeg"
-            "audio/*"
-        } else if (isVideoFile(fileName)) {
-//            "video/mp4"
-            "video/*"
-        } else {
-            ""
+        val mimeType = when {
+            isImageFile(fileName) -> {
+    //            "image/jpeg"
+                "image/*"
+            }
+            isAudioFile(fileName) -> {
+    //            "audio/x-mpeg"
+                "audio/*"
+            }
+            isVideoFile(fileName) -> {
+    //            "video/mp4"
+                "video/*"
+            }
+            else -> {
+                ""
+            }
         }
 
         if (mimeType.isNotEmpty()) {
