@@ -28,4 +28,8 @@ class DownloadTaskManager(private val appContext: Context) {
     fun getAllTaskInfoLiveData(): LiveData<List<TaskInfo>> = dao.queryAllAndReturnLiveData()
     fun getUnfinishedTaskInfoLiveData(): LiveData<MutableList<TaskInfo>> =
         dao.queryUnfinishedLiveData()
+
+    suspend fun getFinishedTaskInfo(): MutableList<TaskInfo> = dao.queryFinished()
+    fun getFinishedTaskInfoLiveData(): LiveData<MutableList<TaskInfo>> =
+        dao.queryFinishedLiveData()
 }

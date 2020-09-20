@@ -159,6 +159,18 @@ object AwesomeDownloader {
     fun getUnfinishedTaskInfoLiveData() = taskManager.getUnfinishedTaskInfoLiveData()
 
     /**
+     *查询已完成的任务信息
+     * @return MutableList<TaskInfo>
+     */
+    suspend fun queryFinishedTaskInfo() = taskManager.getFinishedTaskInfo()
+
+    /**
+     * 返回包含已完成的任务信息的LiveData
+     * @return LiveData<MutableList<TaskInfo>>
+     */
+    fun getFinishedTaskInfoLiveData() = taskManager.getFinishedTaskInfoLiveData()
+
+    /**
      *停止所有下载
      */
     fun stopAll() {

@@ -39,4 +39,10 @@ interface TaskInfoDao {
 
     @Query("select * from TaskInfo where status < $TASK_STATUS_FINISH")
     fun queryUnfinishedLiveData(): LiveData<MutableList<TaskInfo>>
+
+    @Query("select * from TaskInfo where status = $TASK_STATUS_FINISH")
+    suspend fun queryFinished(): MutableList<TaskInfo>
+
+    @Query("select * from TaskInfo where status = $TASK_STATUS_FINISH")
+    fun queryFinishedLiveData(): LiveData<MutableList<TaskInfo>>
 }

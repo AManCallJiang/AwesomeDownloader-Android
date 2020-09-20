@@ -11,7 +11,7 @@ const val CHANNEL_NAME = "AwesomeDownloaderNotification"
 const val descriptionText = "Downloader channel to show progress"
 const val NOTIFICATION_PROGRESS_MAX = 100
 const val NOTIFICATION_DOWNLOAD_ID = 2234
-const val NOTIFICATION_DONE_ID = 2235
+const val NOTIFICATION_DONE_ID = 2277
 
 abstract class NotificationSender(protected val context: Context) {
     protected val CHANNEL_ID: String = this.javaClass.name
