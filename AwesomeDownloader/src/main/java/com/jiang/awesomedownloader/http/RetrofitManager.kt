@@ -1,7 +1,7 @@
 package com.jiang.awesomedownloader.http
 
-import com.jiang.awesomedownloader.downloader.AwesomeDownloader
 import com.jiang.awesomedownloader.downloader.AwesomeDownloaderOption
+import com.jiang.awesomedownloader.downloader.BaseDownloadListener
 import com.jiang.awesomedownloader.downloader.DownloadController
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -20,7 +20,7 @@ object RetrofitManager {
     private const val READ_TIME_OUT: Long = 5
 
     fun createRetrofit(
-        downloadListener: AwesomeDownloader.DownloadListener,
+        downloadListener: BaseDownloadListener,
         downloadController: DownloadController,
         option: AwesomeDownloaderOption
     ): RetrofitAPI {

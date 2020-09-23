@@ -11,10 +11,12 @@ package com.jiang.awesomedownloader.downloader
 class DownloadController {
     private var workState =
         WorkState.RUNNING
+    @Synchronized
     fun pause() {
         workState = WorkState.STOP
     }
 
+    @Synchronized
     fun start() {
         workState = WorkState.RUNNING
     }

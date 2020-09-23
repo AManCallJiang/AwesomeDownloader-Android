@@ -1,5 +1,6 @@
 package com.jiang.awesomedownloader.tool
 
+import android.os.StrictMode
 import com.jiang.awesomedownloader.downloader.WRITE_BUFFER_SIZE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -57,4 +58,10 @@ fun isImageFile(fileName: String): Boolean {
             s.contains("jpeg", ignoreCase = true) ||
             s.contains("png", ignoreCase = true) ||
             s.contains("gif", ignoreCase = true)
+}
+//报错：exposed beyond app through ClipData.Item.getUri，使用
+fun exposedFileUri() {
+    val builder = StrictMode.VmPolicy.Builder()
+    StrictMode.setVmPolicy(builder.build())
+    builder.detectFileUriExposure()
 }

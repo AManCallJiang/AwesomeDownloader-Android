@@ -20,7 +20,7 @@ class DownloadTaskManager(private val appContext: Context) {
         Room.databaseBuilder(appContext, DownloaderRoomDatabase::class.java, DATABASE_NAME).build()
     }
 
-    val dao by lazy { database.getTaskInfoDao() }
+    private val dao by lazy { database.getTaskInfoDao() }
 
     suspend fun getAllTaskInfo(): MutableList<TaskInfo> = dao.queryAll()
     suspend fun getUnfinishedTaskInfo(): MutableList<TaskInfo> = dao.queryUnfinished()
@@ -32,4 +32,20 @@ class DownloadTaskManager(private val appContext: Context) {
     suspend fun getFinishedTaskInfo(): MutableList<TaskInfo> = dao.queryFinished()
     fun getFinishedTaskInfoLiveData(): LiveData<MutableList<TaskInfo>> =
         dao.queryFinishedLiveData()
+
+    suspend fun insertTaskInfo(taskInfo: TaskInfo) {
+        dao.insert(taskInfo)
+    }
+
+    suspend fun deleteTaskInfo(taskInfo: TaskInfo) {
+        dao.delete()
+    }
+
+    suspend fun deleteTaskInfoArray(taskInfoArray: Array<TaskInfo>) {
+        dao.deleteArray(taskInfoArray)
+    }
+
+    suspend fun updateTaskInfo(taskInfo: TaskInfo) {
+        dao.update(taskInfo)
+    }
 }

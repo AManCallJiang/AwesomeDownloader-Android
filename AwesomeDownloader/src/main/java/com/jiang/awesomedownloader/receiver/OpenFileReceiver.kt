@@ -23,42 +23,42 @@ class OpenFileReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun getType(path: String): String {
-        val split = path.split(".")
-        val s = split[split.size - 1]
-        if (s.contains("mp4", ignoreCase = true) ||
-            s.contains("mpg", ignoreCase = true) ||
-            s.contains("mpeg", ignoreCase = true) ||
-            s.contains("avi", ignoreCase = true) ||
-            s.contains("rm", ignoreCase = true) ||
-            s.contains("rmvb", ignoreCase = true) ||
-            s.contains("mov", ignoreCase = true) ||
-            s.contains("wmv", ignoreCase = true) ||
-            s.contains("wmv", ignoreCase = true) ||
-            s.contains("asf", ignoreCase = true) ||
-            s.contains("dat", ignoreCase = true)
-        ) {
-            return "video/*"
-        } else if (s.contains("apk", ignoreCase = true)) {
-            return "application/vnd.android.package-archive"
-        } else if (s.contains("mp3", ignoreCase = true) ||
-            s.contains("wma", ignoreCase = true) ||
-            s.contains("wav", ignoreCase = true) ||
-            s.contains("mid", ignoreCase = true)
-        ) {
-            return "audio/*"
-        } else if (s.contains("bmp", ignoreCase = true) ||
-            s.contains("jpg", ignoreCase = true) ||
-            s.contains("jpeg", ignoreCase = true) ||
-            s.contains("png", ignoreCase = true) ||
-            s.contains("gif", ignoreCase = true) ||
-            s.contains("svg", ignoreCase = true)
-        ) {
-            return "image/*"
-        } else if (s.contains("html", ignoreCase = true)) {
-            return "text/html"
-        } else {
-            return "*/*"
-        }
-    }
+//    private fun getType(path: String): String {
+//        val split = path.split(".")
+//        val s = split[split.size - 1]
+//        if (s.contains("mp4", ignoreCase = true) ||
+//            s.contains("mpg", ignoreCase = true) ||
+//            s.contains("mpeg", ignoreCase = true) ||
+//            s.contains("avi", ignoreCase = true) ||
+//            s.contains("rm", ignoreCase = true) ||
+//            s.contains("rmvb", ignoreCase = true) ||
+//            s.contains("mov", ignoreCase = true) ||
+//            s.contains("wmv", ignoreCase = true) ||
+//            s.contains("wmv", ignoreCase = true) ||
+//            s.contains("asf", ignoreCase = true) ||
+//            s.contains("dat", ignoreCase = true)
+//        ) {
+//            return "video/*"
+//        } else if (s.contains("apk", ignoreCase = true)) {
+//            return "application/vnd.android.package-archive"
+//        } else if (s.contains("mp3", ignoreCase = true) ||
+//            s.contains("wma", ignoreCase = true) ||
+//            s.contains("wav", ignoreCase = true) ||
+//            s.contains("mid", ignoreCase = true)
+//        ) {
+//            return "audio/*"
+//        } else if (s.contains("bmp", ignoreCase = true) ||
+//            s.contains("jpg", ignoreCase = true) ||
+//            s.contains("jpeg", ignoreCase = true) ||
+//            s.contains("png", ignoreCase = true) ||
+//            s.contains("gif", ignoreCase = true) ||
+//            s.contains("svg", ignoreCase = true)
+//        ) {
+//            return "image/*"
+//        } else if (s.contains("html", ignoreCase = true)) {
+//            return "text/html"
+//        } else {
+//            return "*/*"
+//        }
+//    }
 }

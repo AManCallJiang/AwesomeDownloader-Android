@@ -4,6 +4,7 @@ import android.content.Context
 
 import android.util.Log
 import com.jiang.awesomedownloader.database.*
+import com.jiang.awesomedownloader.http.OkHttpManager
 import com.jiang.awesomedownloader.http.RetrofitManager
 import com.jiang.awesomedownloader.tool.MediaStoreHelper
 import com.jiang.awesomedownloader.tool.writeFileInDisk
@@ -27,15 +28,17 @@ object AwesomeDownloader {
     //设置
     val option by lazy { AwesomeDownloaderOption() }
     private var isInitialized = false
-    private val downloadListener by lazy { DownloadListener() }
+
+    // private val downloadListener by lazy { DownloadListener() }
     private val downloadController by lazy { DownloadController() }
-    private val api by lazy {
-        RetrofitManager.createRetrofit(
-            downloadListener,
-            downloadController,
-            option
-        )
-    }
+
+    //    private val api by lazy {
+//        RetrofitManager.createRetrofit(
+//            downloadListener,
+//            downloadController,
+//            option
+//        )
+//    }
     private val downloadQueue by lazy { ConcurrentLinkedQueue<TaskInfo>() }
 
     private lateinit var taskManager: DownloadTaskManager
@@ -48,6 +51,14 @@ object AwesomeDownloader {
     private var onDownloadStop: (Long, Long) -> Unit = { _: Long, _: Long -> }
     private var onDownloadFinished: (String, String) -> Unit = { _: String, _: String -> }
 
+    private val okHttpClient by lazy {
+        OkHttpManager.getClient(
+            option,
+            downloadListener,
+            downloadController
+        )
+    }
+
     /**
      * 下载当前任务并写入硬盘，完成后切换到下一个任务
      */
@@ -55,11 +66,10 @@ object AwesomeDownloader {
         withContext(Dispatchers.IO) {
             if (downloadingTask == null) return@withContext
             val task = downloadingTask!!
+            val request = OkHttpManager.createRequest(task)
+            val response = okHttpClient.newCall(request).execute()
             writeFileInDisk(
-                api.downloadFile(
-                    task.url,
-                    "bytes=${task.downloadedBytes}-"
-                ),
+                response.body()!!,
                 File(task.filePath, task.fileName),
                 task.status == TASK_STATUS_UNFINISHED
             )
@@ -105,7 +115,7 @@ object AwesomeDownloader {
                     0,
                     TASK_STATUS_UNINITIALIZED
                 )
-                taskManager.dao.insert(taskInfo)
+                taskManager.insertTaskInfo(taskInfo)
                 downloadQueue.offer(taskInfo)
                 if (downloadingTask == null) switching2NextTask()
 
@@ -202,9 +212,7 @@ object AwesomeDownloader {
     fun cancelAll() {
         stopAll()
         GlobalScope.launch(Dispatchers.IO) {
-            taskManager.dao.deleteArray(
-                downloadQueue.toTypedArray()
-            )
+            taskManager.deleteTaskInfoArray(downloadQueue.toTypedArray())
             downloadQueue.clear()
             downloadingTask = null
         }
@@ -219,9 +227,7 @@ object AwesomeDownloader {
         if (downloadingTask != null) {
             GlobalScope.launch(Dispatchers.IO) {
                 downloadQueue.poll()
-                taskManager.dao.delete(
-                    downloadingTask!!
-                )
+                taskManager.deleteTaskInfo(downloadingTask!!)
                 downloadingTask = null
                 notificationSender.cancelDownloadProgressNotification()
                 delay(2000)
@@ -231,13 +237,14 @@ object AwesomeDownloader {
     }
 
     /**
-     *
+     *关闭AwesomeDownloader
      */
     fun close() {
         stopAll()
         downloadQueue.clear()
         downloadingTask = null
         appContext = null
+        isInitialized = false
     }
 
     /**
@@ -296,62 +303,68 @@ object AwesomeDownloader {
         return this
     }
 
+    /**
+     *
+     * @param sender NotificationSender
+     * @return AwesomeDownloader
+     */
     fun setNotificationSender(sender: NotificationSender): AwesomeDownloader {
         notificationSender = sender
         return this
     }
 
-    class DownloadListener :
-        BaseDownloadListener {
-        override fun onProgressChange(progress: Long) {
-            Log.d(TAG, "$progress %")
-            if (option.showNotification) {
-                notificationSender.showDownloadProgressNotification(
-                    progress.toInt(), downloadingTask?.fileName ?: "null"
-                )
-            }
-            GlobalScope.launch(Dispatchers.Main) {
-                onDownloadProgressChange(progress)
-            }
-        }
-
-        override fun onStop(downloadBytes: Long, totalBytes: Long) {
-            Log.d(TAG, "$downloadBytes b")
-            val task =
-                downloadingTask
-            task?.let {
-                it.downloadedBytes += downloadBytes
-                if (it.status == TASK_STATUS_UNINITIALIZED) {
-                    it.totalBytes = totalBytes
-                    it.status = TASK_STATUS_UNFINISHED
+    private val downloadListener by lazy {
+        object : BaseDownloadListener {
+            override fun onProgressChange(progress: Long) {
+                Log.d(TAG, "$progress %")
+                if (option.showNotification) {
+                    notificationSender.showDownloadProgressNotification(
+                        progress.toInt(), downloadingTask?.fileName ?: "null"
+                    )
                 }
-                GlobalScope.launch(Dispatchers.IO) { taskManager.dao.update(it) }
-                notificationSender.showDownloadStopNotification(task.fileName)
+                GlobalScope.launch(Dispatchers.Main) {
+                    onDownloadProgressChange(progress)
+                }
             }
-            GlobalScope.launch(Dispatchers.Main) {
-                onDownloadStop(downloadBytes, totalBytes)
-            }
-        }
 
-        override fun onFinish(downloadBytes: Long, totalBytes: Long) {
-            val task = downloadingTask
-            task?.let {
-                if (it.status == TASK_STATUS_UNINITIALIZED) it.totalBytes = totalBytes
-                it.downloadedBytes += downloadBytes
-                it.status = TASK_STATUS_FINISH
-                GlobalScope.launch(Dispatchers.IO) { taskManager.dao.insert(it) }
-                notifyMediaStore(it)
+            override fun onStop(downloadBytes: Long, totalBytes: Long) {
+                Log.d(TAG, "$downloadBytes b")
+                val task =
+                    downloadingTask
+                task?.let {
+                    it.downloadedBytes += downloadBytes
+                    if (it.status == TASK_STATUS_UNINITIALIZED) {
+                        it.totalBytes = totalBytes
+                        it.status = TASK_STATUS_UNFINISHED
+                    }
+                    GlobalScope.launch(Dispatchers.IO) { taskManager.updateTaskInfo(it) }
+                    notificationSender.showDownloadStopNotification(task.fileName)
+                }
+                GlobalScope.launch(Dispatchers.Main) {
+                    onDownloadStop(downloadBytes, totalBytes)
+                }
             }
-            if (option.showNotification) {
 
-                notificationSender.showDownloadDoneNotification(
-                    downloadingTask?.fileName ?: "null",
-                    downloadingTask?.filePath ?: "null"
-                )
-                notificationSender.cancelDownloadProgressNotification()
-            }
-            GlobalScope.launch(Dispatchers.Main) {
-                onDownloadFinished(task?.filePath ?: "null", task?.fileName ?: "null")
+            override fun onFinish(downloadBytes: Long, totalBytes: Long) {
+                val task = downloadingTask
+                task?.let {
+                    if (it.status == TASK_STATUS_UNINITIALIZED) it.totalBytes = totalBytes
+                    it.downloadedBytes += downloadBytes
+                    it.status = TASK_STATUS_FINISH
+                    GlobalScope.launch(Dispatchers.IO) { taskManager.insertTaskInfo(it) }
+                    notifyMediaStore(it)
+                }
+                if (option.showNotification) {
+
+                    notificationSender.showDownloadDoneNotification(
+                        downloadingTask?.fileName ?: "null",
+                        downloadingTask?.filePath ?: "null"
+                    )
+                    notificationSender.cancelDownloadProgressNotification()
+                }
+                GlobalScope.launch(Dispatchers.Main) {
+                    onDownloadFinished(task?.filePath ?: "null", task?.fileName ?: "null")
+                }
             }
         }
     }

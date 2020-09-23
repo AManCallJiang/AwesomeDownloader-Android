@@ -9,7 +9,7 @@ android {
     buildToolsVersion "30.0.0"
 
     defaultConfig {
-        minSdkVersion 22
+        minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -20,7 +20,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -37,7 +37,6 @@ dependencies {
 
     //Retrofit（网络请求框架）
     implementation 'com.squareup.retrofit2:retrofit:2.6.0'
-    //implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
     //OkHttp（网络请求框架）
     implementation 'com.squareup.okhttp3:okhttp:3.12.1'
     //debugImplementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
