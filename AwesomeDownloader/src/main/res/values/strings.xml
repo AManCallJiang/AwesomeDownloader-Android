@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="STOP">stop</string>
+    <string name="stop">stop</string>
+    <string name="cancel">cancel</string>
+    <string name="cancel_all">cancel all</string>
+    <string name="downloading">(downloading)</string>
+    <string name="resume">resume</string>
+    <string name="stoped">(stoped)</string>
+    <string name="notification_content_stop">The download has been stopped.</string>
+    <string name="done">(done)</string>
+    <string name="notification_description">Downloader channel to show progress</string>
 </resources>

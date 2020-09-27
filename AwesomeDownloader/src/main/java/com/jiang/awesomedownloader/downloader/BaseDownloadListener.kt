@@ -9,7 +9,7 @@ package com.jiang.awesomedownloader.downloader
  * @CreateDate:     2020/8/27 22:29
  */
 interface BaseDownloadListener {
-    fun onProgressChange(progress: Long)
+    fun onProgressChange(downloadBytes: Long, totalBytes: Long)
     fun onFinish(downloadBytes: Long, totalBytes: Long)
     fun onStop(downloadBytes: Long, totalBytes: Long)
 }

@@ -15,14 +15,13 @@ import com.jiang.awesomedownloader.receiver.*
  *
  * @ProjectName:    AwesomeDownloader
  * @ClassName:      DefaultNotificationSender
- * @Description:     java类作用描述
+ * @Description:    默认的通知发送者
  * @Author:         江
  * @CreateDate:     2020/9/17 15:28
  */
 
 
-class DefaultNotificationSender(context: Context) :
-    NotificationSender(context) {
+class DefaultNotificationSender(context: Context) : NotificationSender(context) {
 
     private val stopIntent = createIntent(StopReceiver::class.java, "ACTION_STOP")
     private val stopPendingIntent =
@@ -39,9 +38,7 @@ class DefaultNotificationSender(context: Context) :
     private val resumePendingIntent = createPendingIntent(context, resumeIntent)
 
     private fun createIntent(receiverClass: Class<out BroadcastReceiver>, tag: String): Intent {
-        return Intent(context, receiverClass).apply {
-            action = tag
-        }
+        return Intent(context, receiverClass).apply { action = tag }
     }
 
     private fun createPendingIntent(context: Context, intent: Intent): PendingIntent? =
@@ -49,16 +46,24 @@ class DefaultNotificationSender(context: Context) :
 
 
     override fun buildDownloadProgressNotification(progress: Int, fileName: String): Notification {
-        return NotificationCompat.Builder(context, CHANNEL_ID)
+        return NotificationCompat.Builder(context, channelID)
             .setSmallIcon(R.drawable.ic_download)
             .addAction(
                 R.drawable.ic_baseline_pause,
-                context.getString(R.string.STOP),
+                context.getString(R.string.stop),
                 stopPendingIntent
             )
-            .addAction(R.drawable.ic_baseline_cancel_24, "cancel", cancelPendingIntent)
-            .addAction(R.drawable.ic_baseline_delete_forever, "cancel all", cancelAllPendingIntent)
-            .setContentTitle("$fileName (downloading)")
+            .addAction(
+                R.drawable.ic_baseline_cancel_24,
+                context.getString(R.string.cancel),
+                cancelPendingIntent
+            )
+            .addAction(
+                R.drawable.ic_baseline_delete_forever,
+                context.getString(R.string.cancel_all),
+                cancelAllPendingIntent
+            )
+            .setContentTitle("$fileName ${context.getString(R.string.downloading)}")
             .setContentText("$progress%")
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setAutoCancel(false)
@@ -67,20 +72,17 @@ class DefaultNotificationSender(context: Context) :
     }
 
     override fun buildDownloadStopNotification(fileName: String): Notification {
-        return NotificationCompat.Builder(context, CHANNEL_ID)
+        return NotificationCompat.Builder(context, channelID)
             .setSmallIcon(R.drawable.ic_download)
             .addAction(
                 R.drawable.ic_baseline_play_arrow,
-                "resume",
+                context.getString(R.string.resume),
                 resumePendingIntent
             )
-            .addAction(R.drawable.ic_baseline_cancel_24, "cancel", cancelPendingIntent)
-            .addAction(R.drawable.ic_baseline_delete_forever, "cancel all", cancelAllPendingIntent)
-            .setContentTitle("$fileName (stop)")
-            .setContentText("0%")
+            .setContentTitle("$fileName ${context.getString(R.string.stoped)}")
+            .setContentText(context.getString(R.string.notification_content_stop))
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setAutoCancel(false)
-            .setProgress(NOTIFICATION_PROGRESS_MAX, 0, false)
             .build()
     }
 
@@ -88,14 +90,14 @@ class DefaultNotificationSender(context: Context) :
         val openFileIntent = Intent(context, OpenFileReceiver::class.java).apply {
             action = "ACTION_OPEN"
             putExtra("ACTION_OPEN", 0)
-            putExtra("PATH", "$filePath/$fileName")
+            putExtra(INTENT_EXTRA_PATH, "$filePath/$fileName")
             Log.d(TAG, "showDownloadDoneNotification: $filePath/$fileName")
         }
         val openPendingIntent =
             createPendingIntent(context, openFileIntent)
-        return NotificationCompat.Builder(context, CHANNEL_ID)
+        return NotificationCompat.Builder(context, channelID)
             .setSmallIcon(R.drawable.ic_download)
-            .setContentTitle("$fileName (done)")
+            .setContentTitle("$fileName ${context.getString(R.string.done)}")
             .setContentText(fileName)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setContentIntent(openPendingIntent)

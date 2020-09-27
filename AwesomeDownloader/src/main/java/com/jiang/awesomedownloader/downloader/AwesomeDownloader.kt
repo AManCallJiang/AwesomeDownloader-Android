@@ -1,11 +1,9 @@
 package com.jiang.awesomedownloader.downloader
 
 import android.content.Context
-
 import android.util.Log
 import com.jiang.awesomedownloader.database.*
 import com.jiang.awesomedownloader.http.OkHttpManager
-import com.jiang.awesomedownloader.http.RetrofitManager
 import com.jiang.awesomedownloader.tool.MediaStoreHelper
 import com.jiang.awesomedownloader.tool.writeFileInDisk
 import kotlinx.coroutines.*
@@ -21,7 +19,7 @@ import kotlin.Exception
  * @Author:         江
  * @CreateDate:     2020/8/18 20:04
  */
-const val WRITE_BUFFER_SIZE = 1024 * 4
+
 const val TAG = "AwesomeDownloader"
 
 object AwesomeDownloader {
@@ -29,21 +27,16 @@ object AwesomeDownloader {
     val option by lazy { AwesomeDownloaderOption() }
     private var isInitialized = false
 
-    // private val downloadListener by lazy { DownloadListener() }
     private val downloadController by lazy { DownloadController() }
 
-    //    private val api by lazy {
-//        RetrofitManager.createRetrofit(
-//            downloadListener,
-//            downloadController,
-//            option
-//        )
-//    }
     private val downloadQueue by lazy { ConcurrentLinkedQueue<TaskInfo>() }
 
     private lateinit var taskManager: DownloadTaskManager
+
     private var downloadingTask: TaskInfo? = null
+
     private var appContext: Context? = null
+
     private lateinit var notificationSender: NotificationSender
 
     private var onDownloadError: (Exception) -> Unit = {}
@@ -194,15 +187,14 @@ object AwesomeDownloader {
      */
     fun resumeAndStart() {
         GlobalScope.launch(Dispatchers.IO) {
-            queryUnfinishedTaskInfo()
-                .let {
-                    if (it.isNotEmpty()) {
-                        downloadQueue.clear()
-                        downloadQueue.addAll(it)
-                        downloadController.start()
-                        switching2NextTask()
-                    }
+            queryUnfinishedTaskInfo().let {
+                if (it.isNotEmpty()) {
+                    downloadQueue.clear()
+                    downloadQueue.addAll(it)
+                    downloadController.start()
+                    switching2NextTask()
                 }
+            }
         }
     }
 
@@ -210,30 +202,44 @@ object AwesomeDownloader {
      *取消全部任务
      */
     fun cancelAll() {
-        stopAll()
+        downloadController.pause()
         GlobalScope.launch(Dispatchers.IO) {
-            taskManager.deleteTaskInfoArray(downloadQueue.toTypedArray())
+            Log.d(TAG, "cancelAll deleteTaskInfoArray: ${getDownloadQueueArray()}")
+            taskManager.deleteAllUnfinishedTaskInfo()
+            downloadQueue.forEach {
+                clearCache(it)
+            }
             downloadQueue.clear()
             downloadingTask = null
+            downloadController.start()
         }
         notificationSender.cancelDownloadProgressNotification()
+
     }
 
     /**
      * 取消当前任务
      */
     fun cancel() {
-        stopAll()
+        downloadController.pause()
         if (downloadingTask != null) {
             GlobalScope.launch(Dispatchers.IO) {
+                Log.d(TAG, "delete: $downloadingTask")
+                clearCache(downloadingTask!!)
+                taskManager.deleteTaskInfoByID(downloadingTask!!.id)
                 downloadQueue.poll()
-                taskManager.deleteTaskInfo(downloadingTask!!)
                 downloadingTask = null
                 notificationSender.cancelDownloadProgressNotification()
                 delay(2000)
-                resumeAndStart()
+                downloadController.start()
+                switching2NextTask()
             }
         }
+    }
+
+    fun clearCache(taskInfo: TaskInfo) {
+        val file = File(taskInfo.getAbsolutePath())
+        if (file.exists()) file.delete()
     }
 
     /**
@@ -253,10 +259,7 @@ object AwesomeDownloader {
      */
     private fun notifyMediaStore(taskInfo: TaskInfo) {
         try {
-            MediaStoreHelper.notifyMediaStore(
-                taskInfo,
-                appContext!!
-            )
+            MediaStoreHelper.notifyMediaStore(taskInfo, appContext!!)
         } catch (e: java.lang.Exception) {
             Log.e(TAG, "notifyMediaStore: ${e.message}", e)
             onDownloadError(e)
@@ -315,15 +318,24 @@ object AwesomeDownloader {
 
     private val downloadListener by lazy {
         object : BaseDownloadListener {
-            override fun onProgressChange(progress: Long) {
-                Log.d(TAG, "$progress %")
-                if (option.showNotification) {
-                    notificationSender.showDownloadProgressNotification(
-                        progress.toInt(), downloadingTask?.fileName ?: "null"
-                    )
-                }
-                GlobalScope.launch(Dispatchers.Main) {
-                    onDownloadProgressChange(progress)
+            var progress = 0L
+            override fun onProgressChange(downloadBytes: Long, totalBytes: Long) {
+                val newProgress =
+                    (downloadingTask!!.downloadedBytes + downloadBytes) * 100 / if (downloadingTask!!.status == TASK_STATUS_UNINITIALIZED) totalBytes else downloadingTask!!.totalBytes
+                if (progress != newProgress && newProgress < 100L) {
+                    progress = newProgress
+                    Log.d(TAG, "$progress %")
+                    if (option.showNotification) {
+                        notificationSender.showDownloadProgressNotification(
+                            progress.toInt(),
+                            downloadingTask?.fileName ?: "null"
+                        )
+                    }
+                    GlobalScope.launch(Dispatchers.Main) {
+                        onDownloadProgressChange(progress)
+                    }
+                } else if (progress != newProgress && newProgress == 100L) {
+                    onFinish(downloadBytes, totalBytes)
                 }
             }
 
@@ -346,16 +358,19 @@ object AwesomeDownloader {
             }
 
             override fun onFinish(downloadBytes: Long, totalBytes: Long) {
+                Log.d(TAG, "onFinish: ")
                 val task = downloadingTask
                 task?.let {
                     if (it.status == TASK_STATUS_UNINITIALIZED) it.totalBytes = totalBytes
                     it.downloadedBytes += downloadBytes
                     it.status = TASK_STATUS_FINISH
-                    GlobalScope.launch(Dispatchers.IO) { taskManager.insertTaskInfo(it) }
-                    notifyMediaStore(it)
+                    GlobalScope.launch(Dispatchers.IO) {
+                        taskManager.insertTaskInfo(it)
+                        if (option.notifyMediaStoreWhenItDone) notifyMediaStore(it)
+                    }
+
                 }
                 if (option.showNotification) {
-
                     notificationSender.showDownloadDoneNotification(
                         downloadingTask?.fileName ?: "null",
                         downloadingTask?.filePath ?: "null"

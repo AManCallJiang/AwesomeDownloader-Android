@@ -1,14 +1,16 @@
 package com.jiang.awesomedownloader.database
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.Room
+import com.jiang.awesomedownloader.downloader.TAG
 
 /**
  *
  * @ProjectName:    AwesomeDownloader
- * @ClassName:      RoomHelper
- * @Description:     java类作用描述
+ * @ClassName:      DownloadTaskManager
+ * @Description:    使用dao操作数据库
  * @Author:         江
  * @CreateDate:     2020/8/21 22:03
  */
@@ -37,15 +39,25 @@ class DownloadTaskManager(private val appContext: Context) {
         dao.insert(taskInfo)
     }
 
-    suspend fun deleteTaskInfo(taskInfo: TaskInfo) {
-        dao.delete()
+    suspend fun deleteTaskInfo(taskInfo: TaskInfo): Int {
+        Log.d(TAG, "deleteTaskInfo $taskInfo")
+        return dao.delete()
     }
 
-    suspend fun deleteTaskInfoArray(taskInfoArray: Array<TaskInfo>) {
-        dao.deleteArray(taskInfoArray)
+    suspend fun deleteTaskInfoArray(taskInfoArray: Array<TaskInfo>): Int {
+        Log.d(TAG, "deleteTaskInfo $taskInfoArray")
+        return dao.deleteArray(taskInfoArray)
     }
 
     suspend fun updateTaskInfo(taskInfo: TaskInfo) {
         dao.update(taskInfo)
+    }
+
+    suspend fun deleteTaskInfoByID(id: Long) {
+        dao.deleteByID(id)
+    }
+
+    suspend fun deleteAllUnfinishedTaskInfo() {
+        dao.deleteAllUnfinishedTaskInfo()
     }
 }

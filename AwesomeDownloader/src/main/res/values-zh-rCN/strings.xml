@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="stop">停止</string>
+	<string name="cancel">取消</string>
+	<string name="cancel_all">取消所有</string>
+	<string name="downloading">（下载中）</string>
+	<string name="resume">恢复下载</string>
+	<string name="stoped">（已停止）</string>
+	<string name="notification_content_stop">下载已停止。</string>
+	<string name="done">（下载完成）</string>
+	<string name="notification_description">此通知频道用来显示下载进度</string>
+</resources>
