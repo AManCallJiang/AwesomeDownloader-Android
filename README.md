@@ -1,7 +1,7 @@
 # AwesomeDownloader
 
 #### 介绍
- **_AwesomeDownloader 是基于Retrofit和kotlin协程实现的下载器，它能在后台进行下载任务并轻松地让您在下载文件时获取进度，它能随时停止、恢复、取消任务，还可以方便地查询下载的任务和已完成的任务的信息。_** 
+ **_AwesomeDownloader 是基于OkHttp和kotlin协程实现的下载器，它能在后台进行下载任务并轻松地让您在下载文件时获取进度，它能随时停止、恢复、取消任务，还可以方便地查询下载的任务和已完成的任务的信息。_** 
 
 #### 功能&特性
 
@@ -12,11 +12,15 @@
 
  :star: **断点续传**
 
- :star: **控制下载任务**
+ :star: **随时控制下载**
 
- :star: **查询下载任务（支持返回LiveData）**
+ :star: **查询下载任务 (支持返回LiveData)**
 
  :star: **可通过通知栏显示下载情况** 
+
+ :star: **下载多媒体文件加入多媒体库** 
+
+ :star: **自动/手动清除缓存文件** 
 
  :star: **支持链式调用**
 
@@ -39,7 +43,7 @@
 [![](https://jitpack.io/v/com.gitee.jiang_li_jie_j/awesome-downloader.svg)](https://jitpack.io/#com.gitee.jiang_li_jie_j/awesome-downloader)
 ```groovy
 	dependencies {
-	        implementation 'com.gitee.jiang_li_jie_j:awesome-downloader:v1.0.1'
+	        implementation 'com.gitee.jiang_li_jie_j:awesome-downloader:vX.X.X'
 	}
 
 ```
@@ -68,7 +72,7 @@ kotlin:
         val filePath = PathSelector(applicationContext).getPicturesDirPath()
         val fileName = "test.png"
         //加入下载队列
-        AwesomeDownloader.enqueue(url, filePath!!, fileName)
+        AwesomeDownloader.enqueue(url, filePath, fileName)
 ```
 java：
 ```java
@@ -183,8 +187,8 @@ kotlin:
             })
 ```
 
-（通过setNotificationSender()设置的通知栏）
+_(通过setNotificationSender()设置的通知栏)_
 
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0919/153803_33f283b0_5577115.png "屏幕截图.png")
 
-_（通知栏效果可能因为Android版本不同和手机厂商不同而效果不一致）_
+_(通知栏效果可能因为Android版本不同和手机厂商不同而效果不一致)_
