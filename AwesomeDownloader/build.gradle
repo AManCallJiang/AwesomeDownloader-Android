@@ -20,7 +20,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -45,4 +45,5 @@ dependencies {
     kapt "androidx.room:room-compiler:2.2.5"
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation "androidx.room:room-ktx:2.2.5"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
 }
