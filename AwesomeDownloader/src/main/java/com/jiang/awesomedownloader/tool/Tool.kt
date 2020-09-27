@@ -1,13 +1,14 @@
 package com.jiang.awesomedownloader.tool
 
-import android.os.StrictMode
-import com.jiang.awesomedownloader.downloader.WRITE_BUFFER_SIZE
+import  android.os.StrictMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import java.io.File
 import java.io.FileOutputStream
+import java.net.URLConnection
 
+const val WRITE_BUFFER_SIZE = 4096
 suspend fun writeFileInDisk(body: ResponseBody, target: File, isAppend: Boolean) {
     withContext(Dispatchers.IO) {
         val buffer = ByteArray(WRITE_BUFFER_SIZE)
@@ -26,9 +27,9 @@ suspend fun writeFileInDisk(body: ResponseBody, target: File, isAppend: Boolean)
     }
 
 }
+
 fun isVideoFile(fileName: String): Boolean {
-    val split = fileName.split(".")
-    val s = split[split.size - 1]
+    val s = getFileExtension(fileName)
     return s.equals("mp4", ignoreCase = true) ||
             s.equals("mpg", ignoreCase = true) ||
             s.equals("mpeg", ignoreCase = true) ||
@@ -42,8 +43,7 @@ fun isVideoFile(fileName: String): Boolean {
 }
 
 fun isAudioFile(fileName: String): Boolean {
-    val split = fileName.split(".")
-    val s = split[split.size - 1]
+    val s = getFileExtension(fileName)
     return s.equals("mp3", ignoreCase = true) ||
             s.equals("wma", ignoreCase = true) ||
             s.equals("wav", ignoreCase = true) ||
@@ -51,14 +51,42 @@ fun isAudioFile(fileName: String): Boolean {
 }
 
 fun isImageFile(fileName: String): Boolean {
-    val split = fileName.split(".")
-    val s = split[split.size - 1]
+    val s = getFileExtension(fileName)
     return s.contains("bmp", ignoreCase = true) ||
             s.contains("jpg", ignoreCase = true) ||
             s.contains("jpeg", ignoreCase = true) ||
             s.contains("png", ignoreCase = true) ||
             s.contains("gif", ignoreCase = true)
 }
+
+fun isApkFile(fileName: String): Boolean {
+    val s = getFileExtension(fileName)
+    return s.contains("apk", ignoreCase = true)
+
+}
+
+const val STRING_DOT = "."
+fun getFileExtension(fileName: String): String {
+    val splitStrings = fileName.split(STRING_DOT)
+    if (splitStrings.size <= 1) return ""
+    val extension = splitStrings[splitStrings.size - 1]
+   // Log.d(TAG, "getFileExtension: $extension")
+    return extension
+}
+
+//fun getMimeType(fileName: String): String {
+//    return when {
+//        isImageFile(fileName) -> "image/${getFileExtension(fileName)}"
+//        isVideoFile(fileName) -> "video/${getFileExtension(fileName)}"
+//        isAudioFile(fileName) -> "audio/${getFileExtension(fileName)}"
+//        isApkFile(fileName) -> "application/vnd.android.package-archive"
+//        else -> ""
+//    }
+//}
+fun getMimeType(fileName: String): String? {
+    return URLConnection.getFileNameMap().getContentTypeFor(fileName)
+}
+
 //报错：exposed beyond app through ClipData.Item.getUri，使用
 fun exposedFileUri() {
     val builder = StrictMode.VmPolicy.Builder()
