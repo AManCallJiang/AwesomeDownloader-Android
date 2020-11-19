@@ -40,7 +40,7 @@
 ```
 
 2. 添加依赖：
-[![](https://jitpack.io/v/com.gitee.jiang_li_jie_j/awesome-downloader.svg)](https://jitpack.io/#com.gitee.jiang_li_jie_j/awesome-downloader)
+![version](https://jitpack.io/v/com.gitee.jiang_li_jie_j/awesome-downloader.svg)
 ```groovy
 	dependencies {
 	        implementation 'com.gitee.jiang_li_jie_j:awesome-downloader:vX.X.X'
@@ -117,7 +117,7 @@ kotlin:
 
 （默认显示的通知栏）
 
-![默认显示的通知栏](https://images.gitee.com/uploads/images/2020/0919/155031_538a3406_5577115.png "屏幕截图.png")
+![默认显示的通知栏](https://images.gitee.com/uploads/images/2020/0919/155031_538a3406_5577115.png)
 
 设置中确保showNotification为true
 ```kotlin
@@ -189,6 +189,6 @@ kotlin:
 
 _(通过setNotificationSender()设置的通知栏)_
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/0919/153803_33f283b0_5577115.png "屏幕截图.png")
+![自定义显示的通知栏](https://images.gitee.com/uploads/images/2020/0919/153803_33f283b0_5577115.png)
 
 _(通知栏效果可能因为Android版本不同和手机厂商不同而效果不一致)_
