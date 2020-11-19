@@ -1,7 +1,7 @@
 package com.jiang.awesomedownloader.http
 
-import com.jiang.awesomedownloader.downloader.DownloadController
-import com.jiang.awesomedownloader.downloader.BaseDownloadListener
+import com.jiang.awesomedownloader.core.controller.DownloadController
+import com.jiang.awesomedownloader.core.listener.IDownloadListener
 import okhttp3.MediaType
 import okhttp3.ResponseBody
 import okio.*
@@ -16,7 +16,7 @@ import okio.*
  */
 class DownloadResponseBody(
     private val responseBody: ResponseBody,
-    val listener: BaseDownloadListener,
+    val listener: IDownloadListener,
     val downloadController: DownloadController
 ) :
     ResponseBody() {

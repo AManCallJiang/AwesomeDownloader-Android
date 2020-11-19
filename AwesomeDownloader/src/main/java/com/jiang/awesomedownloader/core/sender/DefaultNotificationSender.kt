@@ -1,4 +1,4 @@
-package com.jiang.awesomedownloader.downloader
+package com.jiang.awesomedownloader.core.sender
 
 import android.app.Notification
 import android.app.PendingIntent
@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.jiang.awesomedownloader.R
 import com.jiang.awesomedownloader.receiver.*
+import com.jiang.awesomedownloader.tool.TAG
 
 
 /**

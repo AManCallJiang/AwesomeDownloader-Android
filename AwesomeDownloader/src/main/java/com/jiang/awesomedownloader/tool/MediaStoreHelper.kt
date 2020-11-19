@@ -2,16 +2,12 @@ package com.jiang.awesomedownloader.tool
 
 import android.content.ContentValues
 import android.content.Context
-import android.content.Intent
 import android.media.MediaScannerConnection
-import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
+import com.jiang.awesomedownloader.core.AwesomeDownloader
 import com.jiang.awesomedownloader.database.TaskInfo
-import com.jiang.awesomedownloader.downloader.AwesomeDownloader
-import com.jiang.awesomedownloader.downloader.TAG
-import java.net.URLConnection
 
 
 /**

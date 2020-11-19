@@ -4,7 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.Room
-import com.jiang.awesomedownloader.downloader.TAG
+import com.jiang.awesomedownloader.tool.TAG
+
 
 /**
  *

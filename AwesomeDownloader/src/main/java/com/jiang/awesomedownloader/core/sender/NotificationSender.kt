@@ -1,10 +1,11 @@
-package com.jiang.awesomedownloader.downloader
+package com.jiang.awesomedownloader.core.sender
 
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.jiang.awesomedownloader.R
 
@@ -39,6 +40,7 @@ abstract class NotificationSender(protected val context: Context) {
         }
     }
 
+
     fun cancelDownloadProgressNotification() {
         NotificationManagerCompat.from(context).cancel(NOTIFICATION_DOWNLOAD_ID)
     }
@@ -56,5 +58,13 @@ abstract class NotificationSender(protected val context: Context) {
     fun showDownloadProgressNotification(progress: Int, fileName: String) {
         val notification = buildDownloadProgressNotification(progress, fileName)
         NotificationManagerCompat.from(context).notify(NOTIFICATION_DOWNLOAD_ID, notification)
+    }
+    open fun buildForegroundServiceNotification(): Notification {
+        return NotificationCompat.Builder(context, channelID)
+            .setSmallIcon(R.drawable.ic_download)
+            .setContentTitle(context.getString(R.string.download_service))
+            .setContentText(context.getString(R.string.downloader_ready))
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .build()
     }
 }

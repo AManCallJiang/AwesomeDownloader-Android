@@ -9,4 +9,6 @@
 	<string name="notification_content_stop">下载已停止。</string>
 	<string name="done">（下载完成）</string>
 	<string name="notification_description">此通知频道用来显示下载进度</string>
+	<string name="downloader_ready">下载服务已准备就绪。</string>
+	<string name="download_service">下载服务</string>
 </resources>

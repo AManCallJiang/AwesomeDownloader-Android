@@ -6,7 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import com.jiang.awesomedownloader.downloader.TAG
 import com.jiang.awesomedownloader.tool.*
 import java.io.File
 

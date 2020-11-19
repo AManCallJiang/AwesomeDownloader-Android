@@ -1,8 +1,8 @@
 package com.jiang.awesomedownloader.http
 
 
-import com.jiang.awesomedownloader.downloader.DownloadController
-import com.jiang.awesomedownloader.downloader.BaseDownloadListener
+import com.jiang.awesomedownloader.core.controller.DownloadController
+import com.jiang.awesomedownloader.core.listener.IDownloadListener
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -16,7 +16,7 @@ import okhttp3.Response
  */
 
 class ProgressInterceptor(
-    private val listener: BaseDownloadListener,
+    private val listener: IDownloadListener,
     private val downloadController: DownloadController
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {

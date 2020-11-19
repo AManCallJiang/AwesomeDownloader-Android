@@ -9,4 +9,6 @@
     <string name="notification_content_stop">The download has been stopped.</string>
     <string name="done">(done)</string>
     <string name="notification_description">Downloader channel to show progress</string>
+    <string name="downloader_ready">Download service is ready.</string>
+    <string name="download_service">download service</string>
 </resources>

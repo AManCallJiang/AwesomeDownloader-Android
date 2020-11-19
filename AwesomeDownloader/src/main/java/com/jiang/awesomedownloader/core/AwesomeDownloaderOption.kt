@@ -1,4 +1,4 @@
-package com.jiang.awesomedownloader.downloader
+package com.jiang.awesomedownloader.core
 
 /**
  *
@@ -9,7 +9,11 @@ package com.jiang.awesomedownloader.downloader
  * @CreateDate:     2020/8/24 14:18
  */
 class AwesomeDownloaderOption {
-    var timeout: Long = 3600
+    var timeout: Long = 300
     var showNotification = true
     var notifyMediaStoreWhenItDone = true
+
+    //未实装
+    var serviceModeAutoClose = false
+    var autoCloseTime = 300_000
 }

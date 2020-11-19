@@ -8,6 +8,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.URLConnection
 
+const val TAG = "AwesomeDownloader"
 const val WRITE_BUFFER_SIZE = 4096
 suspend fun writeFileInDisk(body: ResponseBody, target: File, isAppend: Boolean) {
     withContext(Dispatchers.IO) {

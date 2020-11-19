@@ -1,4 +1,4 @@
-package com.jiang.awesomedownloader.downloader
+package com.jiang.awesomedownloader.core.controller
 
 /**
  *
