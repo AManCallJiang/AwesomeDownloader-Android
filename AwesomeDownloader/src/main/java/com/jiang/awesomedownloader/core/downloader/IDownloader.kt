@@ -170,6 +170,8 @@ interface IDownloader {
 
     fun getFinishedTaskInfoLiveData() = taskManager.getFinishedTaskInfoLiveData()
 
+    suspend fun deleteTaskInfo(taskInfo: TaskInfo) = taskManager.deleteTaskInfo(taskInfo)
+    suspend fun deleteTaskInfoArray(array: Array<TaskInfo>) = taskManager.deleteTaskInfoArray(array)
 //    fun setOnError(onError: (Exception) -> Unit) {
 //        AwesomeDownloader.onDownloadError = onError
 //    }

@@ -177,5 +177,8 @@ object AwesomeDownloader {
      */
     fun getFinishedTaskInfoLiveData() = realDownloader.getFinishedTaskInfoLiveData()
 
+    suspend fun deleteTaskInfo(taskInfo: TaskInfo) = realDownloader.deleteTaskInfo(taskInfo)
 
+    suspend fun deleteTaskInfoArray(array: Array<TaskInfo>) =
+        realDownloader.deleteTaskInfoArray(array)
 }

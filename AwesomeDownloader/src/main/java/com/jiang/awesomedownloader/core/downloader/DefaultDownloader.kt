@@ -43,7 +43,6 @@ class DefaultDownloader(application: Application) : IDownloader, AndroidViewMode
     override fun onCleared() {
         super.onCleared()
         close()
-        Toast.makeText(getApplication(),"已销毁",Toast.LENGTH_SHORT).show()
     }
 
 
