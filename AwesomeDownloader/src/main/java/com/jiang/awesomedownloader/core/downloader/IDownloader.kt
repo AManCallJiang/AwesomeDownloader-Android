@@ -32,7 +32,7 @@ interface IDownloader {
     val taskManager: DownloadTaskManager
     var downloadingTask: TaskInfo?
     val okHttpClient: OkHttpClient
-    val downloadListener:IDownloadListener
+    val downloadListener: IDownloadListener
     fun enqueue(url: String, filePath: String, fileName: String) {
         scope.launch(Dispatchers.IO) {
             try {
@@ -52,7 +52,7 @@ interface IDownloader {
             } catch (e: Exception) {
                 Log.e("download", e.localizedMessage, e)
                 withContext(Dispatchers.Main) {
-                    AwesomeDownloader.onDownloadError(e)
+                    AwesomeDownloader.onDownloadError.forEach { it.invoke(e) }
                 }
             }
         }
@@ -139,7 +139,7 @@ interface IDownloader {
             MediaStoreHelper.notifyMediaStore(taskInfo, appContext)
         } catch (e: java.lang.Exception) {
             Log.e(TAG, "notifyMediaStore: ${e.message}", e)
-            AwesomeDownloader.onDownloadError(e)
+            AwesomeDownloader.onDownloadError.forEach { it.invoke(e) }
         }
     }
 
@@ -172,6 +172,8 @@ interface IDownloader {
 
     suspend fun deleteTaskInfo(taskInfo: TaskInfo) = taskManager.deleteTaskInfo(taskInfo)
     suspend fun deleteTaskInfoArray(array: Array<TaskInfo>) = taskManager.deleteTaskInfoArray(array)
+    suspend fun deleteTaskInfoByID(id: Long) = taskManager.deleteTaskInfoByID(id)
+
 //    fun setOnError(onError: (Exception) -> Unit) {
 //        AwesomeDownloader.onDownloadError = onError
 //    }
@@ -207,7 +209,7 @@ interface IDownloader {
                     )
                 }
                 scope.launch(Dispatchers.Main) {
-                    AwesomeDownloader.onDownloadProgressChange(progress)
+                    AwesomeDownloader.onDownloadProgressChange.forEach { it.invoke(progress) }
                 }
             } else if (progress != newProgress && newProgress == 100L) {
                 onFinish(downloadBytes, totalBytes)
@@ -227,7 +229,7 @@ interface IDownloader {
                 AwesomeDownloader.notificationSender.showDownloadStopNotification(task.fileName)
             }
             scope.launch(Dispatchers.Main) {
-                AwesomeDownloader.onDownloadStop(downloadBytes, totalBytes)
+                AwesomeDownloader.onDownloadStop.forEach { it.invoke(downloadBytes, totalBytes) }
             }
         }
 
@@ -254,13 +256,13 @@ interface IDownloader {
                 AwesomeDownloader.notificationSender.cancelDownloadProgressNotification()
             }
             scope.launch(Dispatchers.Main) {
-                AwesomeDownloader.onDownloadFinished(
-                    task?.filePath ?: "null",
-                    task?.fileName ?: "null"
-                )
+                AwesomeDownloader.onDownloadFinished.forEach {
+                    it.invoke(task?.filePath ?: "null", task?.fileName ?: "null")
+                }
             }
         }
     }
+
     fun close()
 
 }
