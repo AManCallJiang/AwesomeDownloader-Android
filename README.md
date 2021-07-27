@@ -43,7 +43,7 @@
 ![version](https://jitpack.io/v/com.gitee.jiang_li_jie_j/awesome-downloader.svg)
 ```groovy
 	dependencies {
-	        implementation 'com.gitee.jiang_li_jie_j:awesome-downloader:vX.X.X'
+	        implementation 'com.gitee.jiang_li_jie_j:awesome-downloader:v1.2.1-alpha'
 	}
 
 ```
