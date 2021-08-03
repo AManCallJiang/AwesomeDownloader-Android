@@ -6,6 +6,8 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import com.jiang.awesomedownloader.core.AwesomeDownloader
 import com.jiang.awesomedownloader.core.controller.DownloadController
@@ -49,11 +51,13 @@ class ForegroundServiceDownloader() : LifecycleService(), IDownloader {
             NOTIFICATION_FOREGROUND_SERVICE_ID,
             AwesomeDownloader.notificationSender.buildForegroundServiceNotification()
         )
+        MutableLiveData(0).observe(this, androidx.lifecycle.Observer {})
     }
 
     override fun onBind(intent: Intent): IBinder {
         super.onBind(intent)
         return DownloadServiceBinder()
+
     }
 
     inner class DownloadServiceBinder : Binder() {

@@ -43,7 +43,7 @@
 ![version](https://jitpack.io/v/com.gitee.jiang_li_jie_j/awesome-downloader.svg)
 ```groovy
 	dependencies {
-	        implementation 'com.gitee.jiang_li_jie_j:awesome-downloader:v1.2.1-alpha'
+	        implementation 'com.gitee.jiang_li_jie_j:awesome-downloader:v1.2.2-alpha'
 	}
 
 ```
@@ -57,32 +57,37 @@
 
 kotlin：
 ```kotlin
-	 AwesomeDownloader.init(applicationContext)
+    //默认模式启动（与页面绑定，页面销毁时，下载器也会结束生命）传入FragmentActivity或Fragment
+    AwesomeDownloader.initWithDefaultMode(requireActivity())
+
+    //前台服务模式启动（独立启动，直至服务被kill或关闭）传入能创建服务的ContextWrapper
+    AwesomeDownloader.initWithServiceMode(this)
 ```
 java：
 ```java    
-	 AwesomeDownloader.INSTANCE.init(getApplicationContext());
+	//默认模式启动（与页面绑定，页面销毁时，下载器也会结束生命）传入FragmentActivity或Fragment
+	AwesomeDownloader.INSTANCE.initWithDefaultMode(this);
+
+	//前台服务模式启动（独立启动，直至服务被kill或关闭）传入能创建服务的ContextWrapper
+	AwesomeDownloader.INSTANCE.initWithServiceMode(this);
 ```
 3.下载文件 
 
 kotlin:
  ```kotlin
-	 val url = "https://images.gitee.com/uploads/images/2020/0914/131423_f1aaba0b_1899542.png"
-        //获取应用外部照片储存路径
+	 	val url = "https://images.gitee.com/uploads/images/2020/0919/155031_538a3406_5577115.png"
+        //获取应用私有照片储存路径
         val filePath = PathSelector(applicationContext).getPicturesDirPath()
-        val fileName = "test.png"
         //加入下载队列
-        AwesomeDownloader.enqueue(url, filePath, fileName)
-```
+        AwesomeDownloader.enqueue(url,filePath,"test.png")
+ ```
 java：
 ```java
-        String url="https://images.gitee.com/uploads/images/2020/0914/131423_f1aaba0b_1899542.png";
-        //获取应用外部照片储存路径
-        String filePath = new PathSelector(getApplicationContext()).getPicturesDirPath();
-        String fileName = "test.png";
-        //加入下载队列
-        AwesomeDownloader.INSTANCE.enqueue(url,filePath,fileName);
-
+    String url = "https://images.gitee.com/uploads/images/2020/0919/155031_538a3406_5577115.png";
+	//获取应用私有照片储存路径
+    String filePath = new PathSelector(applicationContext).getPicturesDirPath();
+	//加入下载队列
+    AwesomeDownloader.INSTANCE.enqueue(url, filePath, "test.png");
 ```
 4.下载控制
 
@@ -91,26 +96,66 @@ kotlin:
         //停止全部
         AwesomeDownloader.stopAll()
         //恢复下载
-        AwesomeDownloader.resumeAndStart()
+        AwesomeDownloader.resume()
         //取消当前
         AwesomeDownloader.cancel()
         //取消全部
         AwesomeDownloader.cancelAll()
 ```
 
-5.设置监听
+5.添加监听&移除监听
 
 kotlin:
 ```kotlin
-        AwesomeDownloader.setOnProgressChange { progress ->
+        //添加监听
+        AwesomeDownloader.addOnProgressChangeListener{ progress ->
             //do something...
-        }.setOnStop { downloadBytes, totalBytes ->
+        }.addOnStopListener{ downloadBytes, totalBytes ->
             //do something...
-        }.setOnFinished { filePath, fileName ->
+        }.addOnFinishedListener{ filePath, fileName ->
             //do something...
-        }.setOnError { exception ->
+        }.addOnErrorListener{ exception ->
             //do something...
         }
+        
+         //移除全部进度监听
+         AwesomeDownloader.removeAllOnProgressChangeListener()
+         
+         //移除最后一个进度监听
+         AwesomeDownloader.onDownloadProgressChange.removeLast()
+         
+         //移除最前的进度监听
+         AwesomeDownloader.onDownloadProgressChange.removeFirst()
+```
+
+java:
+```java
+        //添加监听
+        AwesomeDownloader.INSTANCE
+        .addOnProgressChangeListener(progress -> {
+            //do something
+            return null;
+        }).addOnStopListener((downloadBytes, totalBytes) -> {
+            //do something
+            return null;
+        }).addOnFinishedListener((filePath, fileName) -> {
+            //do something
+            return null;
+        }).addOnErrorListener(exception -> {
+            //do something
+            return null;
+        });
+        
+         //移除全部进度监听
+         AwesomeDownloader.INSTANCE.removeAllOnProgressChangeListener();
+         
+         //移除最后一个进度监听
+         AwesomeDownloader.INSTANCE.getOnDownloadProgressChange()
+         .removeLast();
+         
+         //移除最前的进度监听
+         AwesomeDownloader.INSTANCE.getOnDownloadProgressChange()
+         .removeFirst();
 ```
 
 6.设置自定义通知栏
@@ -192,3 +237,47 @@ _(通过setNotificationSender()设置的通知栏)_
 ![自定义显示的通知栏](https://images.gitee.com/uploads/images/2020/0919/153803_33f283b0_5577115.png)
 
 _(通知栏效果可能因为Android版本不同和手机厂商不同而效果不一致)_
+
+
+
+7.查询下载任务
+
+kotlin:
+```kotlin
+        lifecycleScope.launch(Dispatchers.IO) {
+            //获取全部任务信息
+            AwesomeDownloader.queryAllTaskInfo()
+            //获取完成的任务信息
+            AwesomeDownloader.queryFinishedTaskInfo()
+            //获取完成的任务信息
+            AwesomeDownloader.queryUnfinishedTaskInfo()
+          	//根据id删除数据库中的任务记录
+            AwesomeDownloader.deleteById(id)
+        }
+
+		//获取当前下载中的任务
+		AwesomeDownloader.getDownloadingTask()
+
+		//获取队列中的任务
+		AwesomeDownloader.getDownloadQueueArray()
+
+```
+
+java:
+```java
+	//获取全部任务信息
+	AwesomeDownloader.INSTANCE.getAllTaskInfoLiveData().getValue();
+		
+	//获取完成的任务信息
+	AwesomeDownloader.INSTANCE.getFinishedTaskInfoLiveData().getValue();
+
+	//获取完成的任务信息
+	AwesomeDownloader.INSTANCE.getUnfinishedTaskInfoLiveData().getValue();
+
+	//获取当前下载中的任务
+	AwesomeDownloader.INSTANCE.getDownloadingTask();
+
+	//获取队列中的任务
+	AwesomeDownloader.INSTANCE.getDownloadQueueArray();
+```
+
