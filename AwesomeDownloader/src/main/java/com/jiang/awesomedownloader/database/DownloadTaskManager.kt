@@ -54,9 +54,7 @@ class DownloadTaskManager(private val appContext: Context) {
         dao.update(taskInfo)
     }
 
-    suspend fun deleteTaskInfoByID(id: Long) {
-        dao.deleteByID(id)
-    }
+    suspend fun deleteTaskInfoByID(id: Long) = dao.deleteByID(id)
 
     suspend fun deleteAllUnfinishedTaskInfo() {
         dao.deleteAllUnfinishedTaskInfo()

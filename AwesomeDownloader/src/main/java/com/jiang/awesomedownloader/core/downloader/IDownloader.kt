@@ -117,6 +117,17 @@ interface IDownloader {
 
     }
 
+    fun cancel(taskInfo: TaskInfo) {
+        scope.launch(Dispatchers.IO) {
+            if (downloadingTask != null && taskInfo.id == downloadingTask?.id) {
+                cancel()
+            } else {
+                downloadQueue.remove(taskInfo)
+                taskManager.deleteTaskInfoByID(taskInfo.id)
+            }
+        }
+    }
+
     fun cancel() {
         downloadController.pause()
         if (downloadingTask != null) {

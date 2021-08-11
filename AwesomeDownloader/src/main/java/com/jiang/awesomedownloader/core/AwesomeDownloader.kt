@@ -17,7 +17,6 @@ import com.jiang.awesomedownloader.tool.TAG
 import java.util.*
 
 
-
 /**
  *
  * @ProjectName:    AwesomeDownloaderDemo
@@ -130,6 +129,10 @@ object AwesomeDownloader {
 
     fun cancel() {
         realDownloader.cancel()
+    }
+
+    fun cancel(taskInfo: TaskInfo) {
+        realDownloader.cancel(taskInfo)
     }
 
     fun clearCache(taskInfo: TaskInfo) {
@@ -245,4 +248,8 @@ object AwesomeDownloader {
         realDownloader.deleteTaskInfoArray(array)
 
     suspend fun deleteById(id: Long) = realDownloader.deleteTaskInfoByID(id)
+
+
+    fun isDownloading() = !realDownloader.downloadController.isPause()
+
 }
