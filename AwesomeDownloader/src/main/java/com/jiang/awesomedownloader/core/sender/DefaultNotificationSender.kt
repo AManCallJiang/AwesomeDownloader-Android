@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.jiang.awesomedownloader.R
@@ -43,7 +44,11 @@ class DefaultNotificationSender(context: Context) : NotificationSender(context) 
     }
 
     private fun createPendingIntent(context: Context, intent: Intent): PendingIntent? =
-        PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        } else {
+            PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        }
 
 
     override fun buildDownloadProgressNotification(progress: Int, fileName: String): Notification {
